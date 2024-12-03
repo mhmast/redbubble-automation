@@ -14,9 +14,9 @@ require("dotenv").config();
  * @param {string} imgName Image name in /pictures/generated 
  * @return {string}
  */
-async function producePictureModule(settings, imgName) {
-  const extension = settings.type === "Landscape" ? ".jpg" : ".png";
-  const originalWidth = settings.type === "Landscape" ? 832 : 768;
+async function producePictureModule(prompt, imgName) {
+  const extension = ".png";
+  const originalWidth = 768;
   const originalHeight = 576;
 
   // GENERATE IMAGE VIA DREAMSHAPER
@@ -29,9 +29,9 @@ async function producePictureModule(settings, imgName) {
 
   const negative_prompt =
     "canvas frame, body out of frame, logo, ((deformed face)), ugly, bad art, ((extra limbs)), close up, ((blurry)), ((fusion)), ((inexpressive)),((duplicate)), nude, blurry hands, ((blurry face)), ((blurry  eyes)),  ((poorly drawn eyes)), ((mutation)), bad anatomy, (bad proportions), malformed limbs, missing limbs, (fused fingers), (too many fingers), (long neck), (extra objects), cross-eye"
-  const prompt = `${settings.title.title.en.toLowerCase()}, ${
-    settings.style.prompt
-  }`;
+  // const prompt = `${settings.title.title.en.toLowerCase()}, ${
+  //   settings.style.prompt
+  // }`;
   console.log("Prompt:", prompt);
   const output = await replicate.run(
     `cjwbw/dreamshaper:${version}`,

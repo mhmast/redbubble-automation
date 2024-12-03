@@ -24,39 +24,42 @@ require("dotenv").config();
   // RANDOM DELAY (5 * 60 seconds max) TO UPLOAD TO BYPASS SOME BOT DETECTION
   const maxDelaySeconds = 5 * 60;
   console.log("Random timeout to pass bot detection...");
-  await pause(true, maxDelaySeconds);
+  //await pause(true, maxDelaySeconds);
   console.log("Script starts now");
 
   const formattedDate = today.toISOString().split("T")[0];
-  const timeStr = `${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}-${today.getMilliseconds()}`;
-
+  
   let trendingKeywords = [];
   const trendsFileName = `./src/historic/trends_${formattedDate}.json`;
-
+  
   // GET TRENDING KEYWORDS
   try {
-    await fs.access(trendsFileName, fs.constants.F_OK);
-    const fileContent = await fs.readFile(trendsFileName, "utf-8");
-    const trendsData = JSON.parse(fileContent);
-    trendingKeywords = trendsData.trends;
-  } catch (error) {
-    console.log("Fetching trends on redbubble website...");
+    // await fs.access(trendsFileName, fs.constants.F_OK);
+    // const fileContent = await fs.readFile(trendsFileName, "utf-8");
+    // const trendsData = JSON.parse(fileContent);
+    // trendingKeywords = trendsData.trends;
     trendingKeywords = await getTrendingKeywordsModule(formattedDate);
+  } catch (error) {
+    // console.log("Fetching trends on redbubble website...");
   }
   console.log("Trending Keywords:", trendingKeywords);
-
+  
   // GET PICTURE SETTINGS
-  console.log("Creating picture params...");
-  const pictureSettings = await paramsGeneratorModule(trendingKeywords);
-  console.log("Picture Settings:", pictureSettings);
-
+  // console.log("Creating picture params...");
+  // const pictureSettings = await paramsGeneratorModule(trendingKeywords);
+  // console.log("Picture Settings:", pictureSettings);
+  
   // GET PICTURE TO UPLOAD
-  const imgName = `${formattedDate}-${timeStr}`;
-  console.log("Generating picture with Dreamshaper AI Model on replicate.com ...");
-  const outputImgPath = await producePictureModule(pictureSettings, imgName);
-
-  // UPLOAD PICTURE THEN DELETE IT
-  console.log("Uploading picture on Redbubble...");
-  await uploadPictureModule(pictureSettings, imgName, outputImgPath);
-  console.log("Script ends now");
+  await Promise.all(trendingKeywords.map(async keyword => {
+    const timeStr = `${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}-${today.getMilliseconds()}`;
+    const imgName = `${formattedDate}-${timeStr}`;
+    console.log("Generating picture with Dreamshaper AI Model on replicate.com ...");
+    const outputImgPath = await producePictureModule(keyword.prompt, imgName);
+    
+    // UPLOAD PICTURE THEN DELETE IT
+    console.log("Uploading picture on Redbubble...");
+    await uploadPictureModule(pictureSettings, imgName, outputImgPath);
+  }));
+    console.log("Script ends now");
+    
 })();
