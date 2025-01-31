@@ -1,0 +1,1 @@
+docker run -d --mount type=bind,src=C:\Users\mhmas\Desktop\redbubble\apk,dst=/tmp/local/apk --mount type=bind,src=C:\Users\mhmas\Desktop\redbubble\FiddlerRoot.cer,dst=/data/local/tmp/cert-der.crt -p 6080:6080 -e PROXY_PORT=8888 -e PROXY_HOST=192.168.2.14 -e WEB_VNC=true --device /dev/kvm --name android-container android-frida:latest
